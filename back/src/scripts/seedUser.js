@@ -3,33 +3,43 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 dotenv.config();
 
-const { seedCategories } = require('./seedCategories');
-const { seedCoupons } = require('./seedCoupons');
-const { seedAdmin } = require('./seedAdmin');
-const { seedUser } = require('./seedUser');
-const { seedProducts } = require('./seedProducts');
+const User = require('../modules/users/user.model');
 
-async function runAll() {
-  console.log('🌱 Starting full seed...\n');
-  try {
-    // Connect once — individual scripts also connect but won't fail if already connected
+const seedUser = async () => {
+  if (mongoose.connection.readyState === 0) {
     await mongoose.connect(process.env.MONGODB_URI);
-    await seedCategories();
-    await seedProducts();
-    await seedCoupons();
-    await seedAdmin();
-    await seedUser();
-    console.log('\n✅ All seeds completed successfully!');
-    console.log(`   Admin: ${process.env.ADMIN_EMAIL} / ${process.env.ADMIN_PASSWORD}`);
-    console.log(`   User:  ${process.env.TEST_USER_EMAIL} / ${process.env.TEST_USER_PASSWORD}`);
-    console.log('   Coupon: JAVIER15 (15% off)');
-  } catch (err) {
-    console.error('❌ Seed failed:', err.message);
-    process.exit(1);
-  } finally {
-    await mongoose.disconnect();
-    process.exit(0);
   }
+
+  const email = process.env.TEST_USER_EMAIL;
+  const password = process.env.TEST_USER_PASSWORD;
+
+  if (!email || !password) {
+    throw new Error('TEST_USER_EMAIL y TEST_USER_PASSWORD deben estar definidos en .env');
+  }
+
+  const existing = await User.findOne({ email });
+  if (existing) {
+    console.log('⚠️  Test user already exists, skipping...');
+    return existing;
+  }
+
+  const user = await User.create({
+    name: 'Test User',
+    email,
+    password,
+    role: 'USER',
+    isEmailVerified: true,
+    isActive: true,
+  });
+
+  console.log(`✅ Test user created: ${user.email}`);
+  return user;
+};
+
+if (require.main === module) {
+  seedUser()
+    .then(() => { mongoose.disconnect(); process.exit(0); })
+    .catch((err) => { console.error(err); process.exit(1); });
 }
 
-runAll();
+module.exports = { seedUser };
