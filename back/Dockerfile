@@ -3,5 +3,6 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --only=production
 COPY . .
+RUN chmod +x start.sh
 EXPOSE 3000
-CMD ["node", "src/server.js"]
+CMD ["sh", "start.sh"]

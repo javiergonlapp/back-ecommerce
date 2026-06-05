@@ -6,7 +6,7 @@ dotenv.config();
 const User = require('../modules/users/user.model');
 
 const seedAdmin = async () => {
-  await mongoose.connect(process.env.MONGODB_URI);
+  if (mongoose.connection.readyState === 0) { await mongoose.connect(process.env.MONGODB_URI); }
   console.log('Connected to MongoDB');
   const existing = await User.findOne({ email: process.env.ADMIN_EMAIL || 'admin@admin.com' });
   if (existing) {

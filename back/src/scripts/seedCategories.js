@@ -29,9 +29,9 @@ const categories = [
 ];
 
 const seedCategories = async () => {
-  await mongoose.connect(process.env.MONGODB_URI);
-  console.log('Connected to MongoDB');
-  await Category.deleteMany({});
+  if (mongoose.connection.readyState === 0) { await mongoose.connect(process.env.MONGODB_URI); }
+  const existing = await Category.countDocuments();
+  if (existing > 0) { console.log(`⚠️  Categories already seeded (${existing} found), skipping...`); return; }
   const created = await Category.insertMany(categories);
   console.log(`✅ Seeded ${created.length} categories`);
   return created;

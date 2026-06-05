@@ -27,8 +27,16 @@ const slugMap = {
 };
 
 const seedProducts = async () => {
-  await mongoose.connect(process.env.MONGODB_URI);
-  console.log('Connected to MongoDB');
+  if (mongoose.connection.readyState === 0) {
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log('Connected to MongoDB');
+  }
+
+  const existing = await Product.countDocuments();
+  if (existing > 0) {
+    console.log(`⚠️  Products already seeded (${existing} found), skipping...`);
+    return;
+  }
 
   const categories = await Category.find().lean();
   if (!categories.length) throw new Error('Run seedCategories first!');
@@ -38,8 +46,6 @@ const seedProducts = async () => {
   const data = await fetchJSON('https://dummyjson.com/products?limit=100&skip=0');
   const dummyProducts = data.products;
   console.log(`Fetched ${dummyProducts.length} products from DummyJSON`);
-
-  await Product.deleteMany({});
 
   const fallbackCatId = categories[0]._id;
   const products = dummyProducts.map((p) => ({

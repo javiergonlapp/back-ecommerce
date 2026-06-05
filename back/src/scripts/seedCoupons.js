@@ -6,9 +6,11 @@ dotenv.config();
 const Coupon = require('../modules/coupons/coupon.model');
 
 const seedCoupons = async () => {
-  await mongoose.connect(process.env.MONGODB_URI);
+  if (mongoose.connection.readyState === 0) { await mongoose.connect(process.env.MONGODB_URI); }
   console.log('Connected to MongoDB');
-  await Coupon.deleteMany({});
+  const existing = await Coupon.countDocuments();
+  if (existing > 0) { console.log(`⚠️  Coupons already seeded (${existing} found), skipping...`); return; }
+
   const coupons = [
     {
       code: 'JAVIER15',
