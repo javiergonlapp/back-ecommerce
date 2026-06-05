@@ -5,7 +5,7 @@ services:
     build:
       context: ./back
       dockerfile: Dockerfile
-    container_name: veloce-backend
+    container_name: javier-shop-backend
     ports:
       - "3000:3000"
     env_file:
@@ -21,7 +21,7 @@ services:
     build:
       context: ./front
       dockerfile: Dockerfile
-    container_name: veloce-frontend
+    container_name: javier-shop-frontend
     ports:
       - "80:80"
     depends_on:
@@ -30,4 +30,4 @@ services:
 
 networks:
   default:
-    name: veloce-network
+    name: javier-shop-network
