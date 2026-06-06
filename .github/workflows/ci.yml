@@ -50,3 +50,6 @@ jobs:
         run: |
           curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_BACKEND }}"
           curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_FRONTEND }}"
+
+
+          ### Optional: Wait for deployment to complete (you can adjust the sleep time as needed)
