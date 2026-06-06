@@ -1,8 +1,8 @@
 'use strict';
 const request = require('supertest');
 
-// We don't connect DB for this test
 jest.mock('../../database/connection', () => ({ connectDB: jest.fn() }));
+jest.mock('connect-mongo', () => ({ create: jest.fn(() => ({})) }));
 
 const app = require('../../app');
 
