@@ -12,9 +12,18 @@
     </div>
   </div>
 </template>
+
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { useCartStore } from '@/stores/cart'
+
 const route = useRoute()
+const cartStore = useCartStore()
+
 const orderId = computed(() => route.query.orderId)
+
+onMounted(() => {
+  cartStore.clear()
+})
 </script>
