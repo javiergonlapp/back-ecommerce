@@ -1,4 +1,4 @@
-name: VELOCE CI/CD
+name: Javier Shop CI/CD
 
 on:
   push:
